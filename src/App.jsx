@@ -1,42 +1,46 @@
-import { projects } from './data/projects'
-import Header from './components/Header'
-import Navbar from './components/Navbar'
-import About from './components/About'
-import Skills from './components/Skills'
-import Footer from './components/Footer'
+import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 
-export default function App() {
+import "./styles.css";
+
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Projects from "./pages/Projects";
+import Contact from "./pages/Contact";
+import NotFound from "./pages/NotFound";
+
+function App() {
+  // Dark / Light Mode
+  const [darkMode, setDarkMode] = useState(false);
+
   return (
-    <div className="app">
-      <Header />
-      <Navbar />
-      <main>
-        <section>
-          <h2>Hi, I’m Mansi Jogani</h2>
-          <p>Welcome to my portfolio website built with React.</p>
-        </section>
+    <div className={`app ${darkMode ? "dark" : "light"}`}>
+      
+      {/* Top Bar */}
+      <div className="top-bar">
+        <Navbar />
 
-        <About />
+        <button
+          className="theme-btn"
+          onClick={() => setDarkMode(!darkMode)}
+        >
+          {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+        </button>
+      </div>
 
-        <section id="projects">
-          <h2>Projects</h2>
-          <ul>
-            {projects.map((project) => (
-              <li key={project.title}>
-                <h3>{project.title}</h3>
-                <p>{project.description}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
+      {/* Routes */}
+      <Routes>
+        <Route path="/" element={<Home />} />
 
-        <Skills />
+        <Route path="/projects" element={<Projects />} />
 
-        <section>
-          <h2>Contact</h2>
-        </section>
-      </main>
-      <Footer />
+        <Route path="/contact" element={<Contact />} />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+
     </div>
-  )
+  );
 }
+
+export default App;

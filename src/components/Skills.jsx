@@ -1,13 +1,19 @@
-export default function Skills() {
+function Skills() {
+  const skills = ["HTML", "CSS", "JavaScript", "React"];
+
   return (
     <section id="skills">
       <h2>Skills</h2>
-      <ul>
-        <li>HTML</li>
-        <li>CSS</li>
-        <li>JavaScript</li>
-        <li>React</li>
-      </ul>
+
+      <div className="skills-grid">
+        {skills.map((skill, index) => (
+          <div className="skill-card" key={index}>
+            {skill}
+          </div>
+        ))}
+      </div>
     </section>
-  )
+  );
 }
+
+export default Skills;
