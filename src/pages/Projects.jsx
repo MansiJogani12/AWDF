@@ -1,40 +1,89 @@
+import { useEffect, useState } from "react";
+import Spinner from "../components/Spinner";
+import ErrorMessage from "../components/ErrorMessage";
+
 function Projects() {
-  const projects = [
-    {
-      title: "Portfolio Website",
-      description:
-        "A responsive personal portfolio built using React showcasing my skills, education, and projects.",
-      tech: "React, CSS",
-    },
-    {
-      title: "Weather App",
-      description:
-        "Displays real-time weather information using a weather API with a clean user interface.",
-      tech: "React, JavaScript, API",
-    },
-    {
-      title: "Student Management System",
-      description:
-        "A web application to manage student records with CRUD operations.",
-      tech: "HTML, CSS, JavaScript",
-    },
-  ];
+  const [repos, setRepos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+
+  const fetchRepositories = () => {
+    setLoading(true);
+    setError("");
+
+    fetch("https://api.github.com/users/MansiJogani12/repos")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch repositories.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setRepos(data);
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchRepositories();
+  }, []);
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (error) {
+    return (
+      <ErrorMessage
+        message={error}
+        onRetry={fetchRepositories}
+      />
+    );
+  }
+
+  const filteredRepos = repos.filter((repo) =>
+    repo.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <main>
       <section id="projects">
-        <h2>My Projects</h2>
+        <h2>GitHub Repositories</h2>
+
         <p>
-          Here are some of the projects I have developed during my learning
-          journey.
+          Repositories fetched dynamically using the GitHub REST API.
         </p>
 
+        <input
+          className="search-box"
+          type="text"
+          placeholder="Search repository..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
         <div className="project-grid">
-          {projects.map((project, index) => (
-            <div className="project-card" key={index}>
-              <h3>{project.title}</h3>
-              <p>{project.description}</p>
-              <span>{project.tech}</span>
+          {filteredRepos.map((repo) => (
+            <div className="project-card" key={repo.id}>
+              <h3>{repo.name}</h3>
+
+              <p>
+                ⭐ Stars: {repo.stargazers_count}
+              </p>
+
+              <a
+                href={repo.html_url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Repository
+              </a>
             </div>
           ))}
         </div>
